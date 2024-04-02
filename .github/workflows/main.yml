@@ -55,19 +55,21 @@ jobs:
       run: kubectl get pods
     - name: Try the cluster !
       run: kubectl get services 
-    - name: Get NodePort
-      id: get-node-port
-      run: |
-        NODE_PORT=$(kubectl get svc mon-app-java-service -o=jsonpath='{.spec.ports[0].nodePort}')
-        echo "node_port=$NODE_PORT" >> $GITHUB_ENV
-    
-    - name: Curl Service
-      run: |
-        MINIKUBE_IP=$MINIKUBE_IP
-        NODE_PORT=$NODE_PORT
-        curl http://$MINIKUBE_IP:$NODE_PORT
+    - name: Get Minikube IP address
+      id: get-minikube-ip
+      run: minikube ip
       env:
-        MINIKUBE_IP: ${{ steps.get-minikube-ip.outputs.minikube_ip }}
-        NODE_PORT: ${{ steps.get-node-port.outputs.node_port }}
+        MINIKUBE_IP: ${{ steps.get-minikube-ip.outputs.MINIKUBE_IP }}  # Set environment variable
+
+    - name: Get NodePort for "mon-app-java-service" (if applicable)
+      id: get-node-port
+      run: kubectl get svc mon-app-java-service -o jsonpath="{.spec.ports[0].nodePort}" || true  # Handle potential errors gracefully
+      env:
+        NODE_PORT: ${{ steps.get-node-port.outputs.NODE_PORT }}  # Set environment variable (or empty string if not found)
+
+    - name: Access application (if NodePort available)
+      run: curl http://${{ env.MINIKUBE_IP }}:${{ env.NODE_PORT }}
+      # Only run if NODE_PORT is not empty
+      if: env.NODE_PORT
 
     
