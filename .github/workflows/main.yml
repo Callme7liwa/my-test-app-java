@@ -1,0 +1,33 @@
+name: CI/CD for Minikube
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Minikube
+        uses: kubeactions/setup-minikube@v1
+
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v1
+        with:
+          installKubectl: true
+
+      - name: Build and push Docker image
+        run: |
+          docker build -t my-image .
+          minikube docker-env --shell bash | Invoke-Expression
+          docker tag my-image $(minikube ip):5000/my-image
+          docker push $(minikube ip):5000/my-image
+
+      - name: Apply Kubernetes manifests
+        run: |
+          kubectl apply -f deployment.yaml
