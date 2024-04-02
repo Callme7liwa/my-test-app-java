@@ -55,5 +55,19 @@ jobs:
       run: kubectl get pods
     - name: Try the cluster !
       run: kubectl get services 
+    - name: Get Minikube IP
+      run: echo "::set-output name=minikube_ip::$(minikube ip)"
+    - name: Get NodePort
+      run: |
+        NODE_PORT=$(kubectl get svc mon-app-java-service -o=jsonpath='{.spec.ports[0].nodePort}')
+        echo "::set-output name=node_port::$NODE_PORT"
+    - name: Curl Service
+      run: |
+        MINIKUBE_IP=$INPUT_MINIKUBE_IP
+        NODE_PORT=$INPUT_NODE_PORT
+        curl http://$MINIKUBE_IP:$NODE_PORT
+      env:
+        INPUT_MINIKUBE_IP: ${{ steps.get-minikube-ip.outputs.minikube_ip }}
+        INPUT_NODE_PORT: ${{ steps.get-node-port.outputs.node_port }}
 
     
