@@ -48,6 +48,12 @@ jobs:
     - name: Try the cluster !
       run: kubectl get pods -A
     - name: Deploy to minikube
-      run: kubectl apply -f deployment.yml
+      run: |
+            kubectl apply -f deployment.yml
+            sleep 60s  
     - name: Try the cluster !
-      run: kubectl get pods 
+      run: kubectl get pods
+    - name: Try the cluster !
+      run: kubectl get services 
+
+    
