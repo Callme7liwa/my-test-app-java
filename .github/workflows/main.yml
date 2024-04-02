@@ -8,7 +8,7 @@ on:
 
 env:
   REGISTRY: callme7liwa
-  IMAGE_NAME: ${{ github.repository | lower }}
+  IMAGE_NAME: callme7liwa/app-spring
 
 jobs:
   build-and-deploy:
@@ -29,7 +29,7 @@ jobs:
     - name: Build with Maven
       run: mvn -B package --file pom.xml
         
-    - name: Build & push image to test
+    - name: Build & push image 
       id: build_and_push_test
       uses: mr-smithers-excellent/docker-build-push@v5
       with:
