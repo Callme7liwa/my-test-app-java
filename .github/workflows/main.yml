@@ -8,7 +8,7 @@ on:
 
 env:
   REGISTRY: callme7liwa
-  IMAGE_NAME: ${{ github.repository }}
+  IMAGE_NAME: ${{ github.repository | lower }}
 
 jobs:
   build-and-deploy:
@@ -33,7 +33,7 @@ jobs:
       id: build_and_push_test
       uses: mr-smithers-excellent/docker-build-push@v5
       with:
-        image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+        image: ${{ env.IMAGE_NAME }}
         tags: latest, ${{ github.sha }}
         registry: docker.io
         dockerfile: Dockerfile
