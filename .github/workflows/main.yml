@@ -72,7 +72,7 @@ jobs:
 
     - name: Send report by email
       uses: dawidd6/action-send-mail@v2
-      if: steps.trivy_scan.outputs.exit_code != '0'
+      # if: steps.trivy_scan.outputs.exit_code != '0'
       with:
         server_address: smtp.gmail.com
         server_port: 465
