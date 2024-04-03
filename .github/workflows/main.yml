@@ -28,8 +28,20 @@ jobs:
         distribution: 'adopt'
         cache: maven
         
+      # Construction avec Maven
     - name: Build with Maven
-      run: mvn -B package --file pom.xml
+      run: mvn clean verify
+
+    # Cache des packages Maven
+    - name: Cache Maven packages
+      uses: actions/cache@v1
+      with:
+        path: ~/.m2
+        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+        restore-keys: ${{ runner.os }}-m2
+        
+    # - name: Build with Maven
+    #   run: mvn -B package --file pom.xml
         
     - name: Build & push image 
       id: build_and_push_test
@@ -42,34 +54,68 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
         name: Build and Deploy to Minikube
+
+    - name: Run Trivy vulnerability scanner
+      id: trivy_scan
+      uses: aquasecurity/trivy-action@master
+      with:
+        # Image à analyser
+        image-ref: ${{ env.IMAGE_NAME }}
+        # Format du rapport
+        format: 'json'
+        # Arrêt du workflow en cas de vulnérabilités critiques
+        exit-code: '1'
+        # Ignorer les vulnérabilités non corrigées
+        ignore-unfixed: true
+        # Types de vulnérabilités à rechercher
+        vuln-type: 'os,library'
+
+    - name: Send report by email
+      uses: dawidd6/action-send-mail@v2
+      if: steps.trivy_scan.outputs.exit_code != '0'
+      with:
+        server_address: smtp.gmail.com
+        server_port: 465
+        username: ${{ secrets.EMAIL_USERNAME }}
+        password: ${{ secrets.EMAIL_PASSWORD }}
+        subject: "Trivy Scan Report - Detected Vulnerabilities"
+        body: |
+          Dear User,
+          Trivy scan has detected vulnerabilities in your Docker image. Please find attached the Trivy scan report for more details.
+          Kind regards,
+          Your GitHub Actions
+        from: durapp123@gmail.com
+        to: ayoubseddiki132@gmail.com
+        attachments: 'trivy-results-docker.sarif'
+
         
-    - name: Start minikube
-      uses: medyagh/setup-minikube@master
-    - name: Try the cluster !
-      run: kubectl get pods -A
-    - name: Deploy to minikube
-      run: |
-            kubectl apply -f deployment.yml
-            sleep 60s  
-    - name: Try the cluster !
-      run: kubectl get pods
-    - name: Try the cluster !
-      run: kubectl get services 
-    - name: Get Minikube IP address
-      id: get-minikube-ip
-      run: minikube ip
-      env:
-        MINIKUBE_IP: ${{ steps.get-minikube-ip.outputs.MINIKUBE_IP }}  # Set environment variable
+    # - name: Start minikube
+    #   uses: medyagh/setup-minikube@master
+    # - name: Try the cluster !
+    #   run: kubectl get pods -A
+    # - name: Deploy to minikube
+    #   run: |
+    #         kubectl apply -f deployment.yml
+    #         sleep 60s  
+    # - name: Try the cluster !
+    #   run: kubectl get pods
+    # - name: Try the cluster !
+    #   run: kubectl get services 
+    # - name: Get Minikube IP address
+    #   id: get-minikube-ip
+    #   run: minikube ip
+    #   env:
+    #     MINIKUBE_IP: ${{ steps.get-minikube-ip.outputs.MINIKUBE_IP }}  # Set environment variable
 
-    - name: Get NodePort for "mon-app-java-service" (if applicable)
-      id: get-node-port
-      run: kubectl get svc mon-app-java-service -o jsonpath="{.spec.ports[0].nodePort}" || true  # Handle potential errors gracefully
-      env:
-        NODE_PORT: ${{ steps.get-node-port.outputs.NODE_PORT }}  # Set environment variable (or empty string if not found)
+    # - name: Get NodePort for "mon-app-java-service" (if applicable)
+    #   id: get-node-port
+    #   run: kubectl get svc mon-app-java-service -o jsonpath="{.spec.ports[0].nodePort}" || true  # Handle potential errors gracefully
+    #   env:
+    #     NODE_PORT: ${{ steps.get-node-port.outputs.NODE_PORT }}  # Set environment variable (or empty string if not found)
 
-    - name: Access application (if NodePort available)
-      run: curl http://${{ env.MINIKUBE_IP }}:${{ env.NODE_PORT }}
-      # Only run if NODE_PORT is not empty
-      # if: env.NODE_PORT
+    # - name: Access application (if NodePort available)
+    #   run: curl http://${{ env.MINIKUBE_IP }}:${{ env.NODE_PORT }}
+    #   # Only run if NODE_PORT is not empty
+    #   if: env.NODE_PORT
 
     
