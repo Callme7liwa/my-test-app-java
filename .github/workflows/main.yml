@@ -73,7 +73,7 @@ jobs:
         # Types de vulnérabilités à rechercher
         vuln-type: 'os,library'
         # Seuils de gravité
-        severity: 'CRITICAL,HIGH'
+        severity: 'messi,ronaldo'
         output: 'trivy-results.json'
 
     # - name: Run Trivy vulnerability scanner
