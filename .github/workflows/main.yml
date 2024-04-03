@@ -9,6 +9,8 @@ on:
 env:
   REGISTRY: callme7liwa
   IMAGE_NAME: callme7liwa/app-spring
+  EMAIL_SENDER: durapp123@gmail.com 
+  EMAAIL_RECEIVER: ayoubseddiki132@gmail.com
 
 jobs:
   build-and-deploy:
@@ -40,9 +42,6 @@ jobs:
         key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
         restore-keys: ${{ runner.os }}-m2
         
-    # - name: Build with Maven
-    #   run: mvn -B package --file pom.xml
-        
     - name: Build & push image 
       id: build_and_push_test
       uses: mr-smithers-excellent/docker-build-push@v5
@@ -73,7 +72,7 @@ jobs:
         # Types de vulnérabilités à rechercher
         vuln-type: 'os,library'
         # Seuils de gravité
-        severity: 'messi,ronaldo'
+        severity: 'HIGH,CRITICAL'
         output: 'trivy-results.json'
 
     # - name: Run Trivy vulnerability scanner
@@ -91,7 +90,24 @@ jobs:
     #     # Types de vulnérabilités à rechercher
     #     vuln-type: 'os,library'
 
+        # **Ajout**: Télécharger le script de génération du rapport HTML
+    - name: Télécharger le script de génération du rapport HTML
+      uses: actions/download-artifact@v2
+      with:
+        name: trivy-report-html
+        path: .
 
+    # **Ajout**: Générer le rapport HTML
+    - name: Générer le rapport HTML
+      run: |
+        jq -r '.results[] | .vulnerability | .title + ": " + .description' trivy-results.json > trivy-results.html
+
+    # **Ajout**: Télécharger le rapport HTML en tant qu'artefact
+    - name: Télécharger le rapport HTML en tant qu'artefact
+      uses: actions/upload-artifact@v2
+      with:
+        name: trivy-report-html
+        path: trivy-results.html
 
     - name: Send report by email
       uses: dawidd6/action-send-mail@v2
@@ -107,10 +123,9 @@ jobs:
           Trivy scan has detected vulnerabilities in your Docker image. Please find attached the Trivy scan report for more details.
           Kind regards,
           Your GitHub Actions
-        from: durapp123@gmail.com
-        to: ayoubseddiki132@gmail.com
-        attachments: 'trivy-results.json'
-
+        from: ${{env.EMAIL_SENDER}}
+        to: ${{env.EMAIL_RECEIVER}} 
+        attachments: 'trivy-results.html'
         
     # - name: Start minikube
     #   uses: medyagh/setup-minikube@master
