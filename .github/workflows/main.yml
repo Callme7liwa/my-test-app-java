@@ -62,7 +62,8 @@ jobs:
         # Image à analyser
         image-ref: ${{ env.IMAGE_NAME }}
         # Format du rapport
-        format: 'json'
+        format: 'template'
+        template: "@/contrib/html.tpl"
         # **Ajout**: Télécharger le rapport SARIF
         download-report: true
         # **Ajout**: Enregistrer le rapport SARIF dans un artefact
@@ -73,7 +74,7 @@ jobs:
         vuln-type: 'os,library'
         # Seuils de gravité
         severity: 'HIGH,CRITICAL'
-        output: 'trivy-results.json'
+        output: 'trivy-results.html'
 
     # - name: Run Trivy vulnerability scanner
     #   id: trivy_scan
@@ -89,25 +90,6 @@ jobs:
     #     ignore-unfixed: true
     #     # Types de vulnérabilités à rechercher
     #     vuln-type: 'os,library'
-
-        # **Ajout**: Télécharger le script de génération du rapport HTML
-    - name: Télécharger le script de génération du rapport HTML
-      uses: actions/download-artifact@v3
-      with:
-        name: trivy-report-html
-        path: .
-
-    # **Ajout**: Générer le rapport HTML
-    - name: Générer le rapport HTML
-      run: |
-        jq -r '.results[] | .vulnerability | .title + ": " + .description' trivy-results.json > trivy-results.html
-
-    # **Ajout**: Télécharger le rapport HTML en tant qu'artefact
-    - name: Télécharger le rapport HTML en tant qu'artefact
-      uses: actions/upload-artifact@v2
-      with:
-        name: trivy-report-html
-        path: trivy-results.html
 
     - name: Send report by email
       uses: dawidd6/action-send-mail@v2
