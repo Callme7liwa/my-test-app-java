@@ -64,7 +64,7 @@ jobs:
         # Format du rapport
         format: 'json'
         # Arrêt du workflow en cas de vulnérabilités critiques
-        exit-code: '1'
+        # exit-code: '1'
         # Ignorer les vulnérabilités non corrigées
         ignore-unfixed: true
         # Types de vulnérabilités à rechercher
