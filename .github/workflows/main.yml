@@ -70,26 +70,15 @@ jobs:
         vuln-type: 'os,library'
         # Seuils de gravité
         severity: 'HIGH,CRITICAL'
+    #   Arrêt du workflow en cas de vulnérabilités critiques
+    #   exit-code: '1'
+    #   Ignorer les vulnérabilités non corrigées
+    #   ignore-unfixed: true
         output: 'trivy-results.html'
-
-    # - name: Run Trivy vulnerability scanner
-    #   id: trivy_scan
-    #   uses: aquasecurity/trivy-action@master
-    #   with:
-    #     # Image à analyser
-    #     image-ref: ${{ env.IMAGE_NAME }}
-    #     # Format du rapport
-    #     format: 'json'
-    #     # Arrêt du workflow en cas de vulnérabilités critiques
-    #     # exit-code: '1'
-    #     # Ignorer les vulnérabilités non corrigées
-    #     ignore-unfixed: true
-    #     # Types de vulnérabilités à rechercher
-    #     vuln-type: 'os,library'
 
     - name: Send report by email
       uses: dawidd6/action-send-mail@v2
-      # if: steps.trivy_scan.outputs.exit_code != '0'
+      if: always()
       with:
         server_address: smtp.gmail.com
         server_port: 465
@@ -102,7 +91,7 @@ jobs:
           Kind regards,
           Your GitHub Actions
         from: ${{env.EMAIL_SENDER}}
-        to: ${{env.EMAIL_RECEIVER}} 
+        to: yoann.simeoni@ge.com
         attachments: 'trivy-results.html'
         
     # - name: Start minikube
