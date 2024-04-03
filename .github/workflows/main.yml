@@ -10,7 +10,7 @@ env:
   REGISTRY: callme7liwa
   IMAGE_NAME: callme7liwa/app-spring
   EMAIL_SENDER: durapp123@gmail.com 
-  EMAAIL_RECEIVER: ayoubseddiki132@gmail.com
+  EMAIL_RECEIVER: ayoubseddiki132@gmail.com
 
 jobs:
   build-and-deploy:
@@ -64,10 +64,6 @@ jobs:
         # Format du rapport
         format: 'template'
         template: "@/contrib/html.tpl"
-        # **Ajout**: Télécharger le rapport SARIF
-        download-report: true
-        # **Ajout**: Enregistrer le rapport SARIF dans un artefact
-        upload-sarif: true
         # Ignorer les vulnérabilités non corrigées
         ignore-unfixed: true
         # Types de vulnérabilités à rechercher
