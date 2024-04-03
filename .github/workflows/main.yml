@@ -92,7 +92,7 @@ jobs:
 
         # **Ajout**: Télécharger le script de génération du rapport HTML
     - name: Télécharger le script de génération du rapport HTML
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v4
       with:
         name: trivy-report-html
         path: .
