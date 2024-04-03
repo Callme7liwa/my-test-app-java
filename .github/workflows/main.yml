@@ -10,7 +10,7 @@ env:
   REGISTRY: callme7liwa
   IMAGE_NAME: callme7liwa/app-spring
   EMAIL_SENDER: durapp123@gmail.com 
-  EMAIL_RECEIVER: ayoubseddiki132@gmail.com
+  EMAIL_RECEIVER: yoann.simeoni@ge.com
 
 jobs:
   build-and-deploy:
