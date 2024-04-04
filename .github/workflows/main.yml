@@ -44,16 +44,30 @@ jobs:
 
     - name: Create kubeconfig
       run: |
-        mkdir ${HOME}/.kube
-        echo ${{ secrets.KUBE_CONFIG }} | base64 --decode > ${HOME}/.kube/config.yaml
-        cat ${HOME}/.kube/config.yaml
-    - name: Get file
-      run: cat ${HOME}/.kube/config.yaml
-    - name: Get version
-      run: kubectl get version
+       mkdir ${HOME}/.kube
+       echo ${{ secrets.KUBE_CONFIG }} | base64 --decode > ${HOME}/.kube/config.yaml
+       cat ${HOME}/.kube/config.yaml
       
+    - name: setup config file
+      uses: azure/k8s-set-context@v4
+      with:
+        method: kubeconfig
+        kubeconfig: ${HOME}/.kube/config.yaml
+        
+    - name: Deploy to Kubernetes
+      run: |
+        kubectl apply -f deployment.yaml        
 
-    
+      
+    # - name: Create kubeconfig
+    #   run: |
+    #     mkdir ${HOME}/.kube
+    #     echo ${{ secrets.KUBE_CONFIG }} | base64 --decode > ${HOME}/.kube/config.yaml
+    #     cat ${HOME}/.kube/config.yaml
+    # - name: Get file
+    #   run: cat ${HOME}/.kube/config.yaml
+    # - name: Get version
+    #   run: kubectl get version
         
     # - name: Build & push image 
     #   id: build_and_push_test
