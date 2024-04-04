@@ -54,9 +54,9 @@ jobs:
         method: kubeconfig
         kubeconfig: ${HOME}/.kube/config.yaml
         
-    - name: Deploy to Kubernetes
+    - name: get version
       run: |
-        kubectl apply -f deployment.yaml        
+        kubectl version    
 
       
     # - name: Create kubeconfig
