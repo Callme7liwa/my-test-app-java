@@ -42,11 +42,10 @@ jobs:
         key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
         restore-keys: ${{ runner.os }}-m2
     - name: get pods
-      uses: steebchen/kubectl@master
+    - uses: actions-hub/kubectl@master
       env:
-        KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG }}
+        KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
       with:
-        command: config current-context
         args: get pods
     # - name: Create kubeconfig
     #   run: |
