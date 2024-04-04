@@ -55,6 +55,10 @@ jobs:
         base64-kube-config: ${{ secrets.KUBE_CONFIG }}
     - run: kubectl config current-context
     - run: kubectl config view
+    - run: kubectl config use-context k3s02-dev3
+    - run: kubectl get services
+
+    
 
     # - uses: actions-hub/kubectl@master
     #   env:
