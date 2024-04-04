@@ -46,7 +46,7 @@ jobs:
       env:
         KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG }}
       with:
-        command: config current-config
+        command: config current-context
         args: get pods
     # - name: Create kubeconfig
     #   run: |
