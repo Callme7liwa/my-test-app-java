@@ -45,10 +45,10 @@ jobs:
     - name: Create kubeconfig
       run: |
         mkdir ${HOME}/.kube
-        echo ${{ secrets.KUBE_CONFIG }} | base64 --decode > ${HOME}/.kube/config
-        cat ${HOME}/.kube/config
+        echo ${{ secrets.KUBE_CONFIG }} | base64 --decode > ${HOME}/.kube/config.yaml
+        cat ${HOME}/.kube/config.yaml
     - name: Get file
-      run: cat ${HOME}/.kube/config
+      run: cat ${HOME}/.kube/config.yaml
     - name: Get version
       run: kubectl get version
       
