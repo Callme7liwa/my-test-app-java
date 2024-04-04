@@ -50,15 +50,10 @@ jobs:
        ls ~/.kube
       
     - name: setup config file
-      uses: azure/k8s-set-context@v4
+    - uses: tale/kubectl-action@v1
       with:
-        method: kubeconfig
-        kubeconfig: ${HOME}/.kube/config
-        
-    - name: get version
-      run: |
-        kubectl version    
-
+        base64-kube-config: ${{ secrets.KUBE_CONFIG }}
+    - run: kubectl get pods
       
     # - name: Create kubeconfig
     #   run: |
