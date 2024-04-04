@@ -45,14 +45,15 @@ jobs:
     - name: Create kubeconfig
       run: |
        mkdir ${HOME}/.kube
-       echo ${{ secrets.KUBE_CONFIG }} | base64 --decode > ${HOME}/.kube/config.yaml
-       cat ${HOME}/.kube/config.yaml
+       echo ${{ secrets.KUBE_CONFIG }} | base64 --decode > ${HOME}/.kube/config
+       cat ${HOME}/.kube/config
+       ls ~/.kube
       
     - name: setup config file
       uses: azure/k8s-set-context@v4
       with:
         method: kubeconfig
-        kubeconfig: ${HOME}/.kube/config.yaml
+        kubeconfig: ${HOME}/.kube/config
         
     - name: get version
       run: |
