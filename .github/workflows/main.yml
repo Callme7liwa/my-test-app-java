@@ -54,6 +54,13 @@ jobs:
       with:
         base64-kube-config: ${{ secrets.KUBE_CONFIG }}
     - run: kubectl config current-context
+
+    - name: get services 
+      uses: tale/kubectl-action@v1
+      with:
+        base64-kube-config: ${{ secrets.KUBE_CONFIG }}
+    - run: kubectl get services
+    - run: kubectl get services
       
     # - name: Create kubeconfig
     #   run: |
