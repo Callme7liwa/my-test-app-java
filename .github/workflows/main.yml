@@ -55,7 +55,7 @@ jobs:
         base64-kube-config: ${{ secrets.ANOTHER_KUBE_CONF }}
     - run: kubectl config current-context
     - run: kubectl config view
-    - run: kubectl config use-context k3s02-dev3
+    - run: kubectl config use-context minikube
     - run: kubectl get services
 
     
