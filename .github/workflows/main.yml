@@ -50,7 +50,7 @@ jobs:
        ls ~/.kube
       
     - name: setup config file and get pods test
-    - uses: tale/kubectl-action@v1
+      uses: tale/kubectl-action@v1
       with:
         base64-kube-config: ${{ secrets.KUBE_CONFIG }}
     - run: kubectl get pods
