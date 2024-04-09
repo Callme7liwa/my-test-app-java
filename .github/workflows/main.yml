@@ -1,0 +1,167 @@
+name: Build and Deploy to Minikube
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  REGISTRY: callme7liwa
+  IMAGE_NAME: callme7liwa/app-spring
+  EMAIL_SENDER: durapp123@gmail.com 
+  EMAIL_RECEIVER: yoann.simeoni@ge.com
+
+jobs:
+  build-and-deploy:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+    - name: List files
+      run: ls -R
+
+    - name: Set up JDK 11
+      uses: actions/setup-java@v2
+      with:
+        java-version: '11'
+        distribution: 'adopt'
+        cache: maven
+        
+      # Construction avec Maven
+    - name: Build with Maven
+      run: mvn clean verify
+
+    # Cache des packages Maven
+    - name: Cache Maven packages
+      uses: actions/cache@v1
+      with:
+        path: ~/.m2
+        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+        restore-keys: ${{ runner.os }}-m2
+
+    - name: Create kubeconfig
+      run: |
+       mkdir ${HOME}/.kube
+       echo ${{ secrets.ANOTHER_KUBE_CONF }} | base64 --decode > ${HOME}/.kube/config
+       cat ${HOME}/.kube/config
+       ls ~/.kube
+      
+    - name: setup config file and get pods test
+      uses: tale/kubectl-action@v1
+      with:
+        base64-kube-config: ${{ secrets.ANOTHER_KUBE_CONF }}
+    - run: kubectl config current-context
+    - run: kubectl config view
+    - run: kubectl config use-context minikube
+    - run: kubectl get services
+
+    
+
+    # - uses: actions-hub/kubectl@master
+    #   env:
+    #     KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
+    #   with:
+    #     args: get nodes
+
+    # - name: get services 
+    #   uses: tale/kubectl-action@v1
+    #   with:
+    #     base64-kube-config: ${{ secrets.KUBE_CONFIG }}
+    # - run: kubectl get services
+
+      
+    # - name: Create kubeconfig
+    #   run: |
+    #     mkdir ${HOME}/.kube
+    #     echo ${{ secrets.KUBE_CONFIG }} | base64 --decode > ${HOME}/.kube/config.yaml
+    #     cat ${HOME}/.kube/config.yaml
+    # - name: Get file
+    #   run: cat ${HOME}/.kube/config.yaml
+    # - name: Get version
+    #   run: kubectl get version
+        
+    # - name: Build & push image 
+    #   id: build_and_push_test
+    #   uses: mr-smithers-excellent/docker-build-push@v5
+    #   with:
+    #     image: ${{ env.IMAGE_NAME }}
+    #     tags: latest, ${{ github.sha }}
+    #     registry: docker.io
+    #     dockerfile: Dockerfile
+    #     username: ${{ secrets.DOCKER_USERNAME }}
+    #     password: ${{ secrets.DOCKER_PASSWORD }}
+    #     name: Build and Deploy to Minikube
+      
+    #    # Exécution de l'analyse de vulnérabilités Trivy
+    # - name: Analyser les vulnérabilités avec Trivy
+    #   id: trivy_scan
+    #   uses: aquasecurity/trivy-action@master
+    #   with:
+    #     # Image à analyser
+    #     image-ref: ${{ env.IMAGE_NAME }}
+    #     # Format du rapport
+    #     format: 'template'
+    #     template: "@/contrib/html.tpl"
+    #     # Ignorer les vulnérabilités non corrigées
+    #     ignore-unfixed: true
+    #     # Types de vulnérabilités à rechercher
+    #     vuln-type: 'os,library'
+    #     # Seuils de gravité
+    #     severity: 'HIGH,CRITICAL'
+    # #   Arrêt du workflow en cas de vulnérabilités critiques
+    # #   exit-code: '1'
+    # #   Ignorer les vulnérabilités non corrigées
+    # #   ignore-unfixed: true
+    #     output: 'trivy-results.html'
+
+    # - name: Send report by email
+    #   uses: dawidd6/action-send-mail@v2
+    #   if: always()
+    #   with:
+    #     server_address: smtp.gmail.com
+    #     server_port: 465
+    #     username: ${{ secrets.EMAIL_USERNAME }}
+    #     password: ${{ secrets.EMAIL_PASSWORD }}
+    #     subject: "Trivy Scan Report - Detected Vulnerabilities"
+    #     body: |
+    #       Dear User,
+    #       Trivy scan has detected vulnerabilities in your Docker image. Please find attached the Trivy scan report for more details.
+    #       Kind regards,
+    #       Your GitHub Actions
+    #     from: ${{env.EMAIL_SENDER}}
+    #     to: yoann.simeoni@ge.com
+    #     attachments: 'trivy-results.html'
+        
+    # - name: Start minikube
+    #   uses: medyagh/setup-minikube@master
+    # - name: Try the cluster !
+    #   run: kubectl get pods -A
+    # - name: Deploy to minikube
+    #   run: |
+    #         kubectl apply -f deployment.yml
+    #         sleep 60s  
+    # - name: Try the cluster !
+    #   run: kubectl get pods
+    # - name: Try the cluster !
+    #   run: kubectl get services 
+    # - name: Get Minikube IP address
+    #   id: get-minikube-ip
+    #   run: minikube ip
+    #   env:
+    #     MINIKUBE_IP: ${{ steps.get-minikube-ip.outputs.MINIKUBE_IP }}  # Set environment variable
+
+    # - name: Get NodePort for "mon-app-java-service" (if applicable)
+    #   id: get-node-port
+    #   run: kubectl get svc mon-app-java-service -o jsonpath="{.spec.ports[0].nodePort}" || true  # Handle potential errors gracefully
+    #   env:
+    #     NODE_PORT: ${{ steps.get-node-port.outputs.NODE_PORT }}  # Set environment variable (or empty string if not found)
+
+    # - name: Access application (if NodePort available)
+    #   run: curl http://${{ env.MINIKUBE_IP }}:${{ env.NODE_PORT }}
+    #   # Only run if NODE_PORT is not empty
+    #   if: env.NODE_PORT
+
+    
