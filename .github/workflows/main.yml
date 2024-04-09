@@ -15,7 +15,7 @@ env:
 jobs:
   build-and-deploy:
 
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
 
     steps:
     - name: Checkout code
@@ -42,17 +42,15 @@ jobs:
         key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
         restore-keys: ${{ runner.os }}-m2
 
-    - name: Create kubeconfig
-      run: |
-       mkdir ${HOME}/.kube
-       echo ${{ secrets.KUBE_CONF }} | base64 --decode > ${HOME}/.kube/config
-       cat ${HOME}/.kube/config
-       ls ~/.kube
+    # - name: Create kubeconfig
+    #   run: |
+    #    mkdir ${HOME}/.kube
+    #    echo ${{ secrets.KUBE_CONF }} | base64 --decode > ${HOME}/.kube/config
+    #    cat ${HOME}/.kube/config
+    #    ls ~/.kube
       
     - name: setup config file and get pods test
       uses: tale/kubectl-action@v1
-      with:
-        base64-kube-config: ${{ secrets.KUBE_CONF }}
     - run: kubectl config current-context
     - run: kubectl config view
     - run: kubectl config use-context minikube
