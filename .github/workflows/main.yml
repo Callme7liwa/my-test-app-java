@@ -27,6 +27,13 @@ jobs:
         java-version: '11'
         distribution: 'adopt'
         cache: maven
+
+    - name : get kubectl    
+      uses: actions-hub/kubectl@master
+      env:
+        KUBE_CONFIG: ${{ secrets.KUBE_CONF }}
+      with:
+        args: config current-context
         
     #   # Construction avec Maven
     # - name: Build with Maven
@@ -46,9 +53,7 @@ jobs:
     #    echo ${{ secrets.KUBE_CONF }} | base64 --decode > ${HOME}/.kube/config
     #    cat ${HOME}/.kube/config
     #    ls ~/.kube
-      
-    - name: setup config file and get pods test
-      uses: tale/kubectl-action@v1
+
     # - run: kubectl config current-context
     # - run: kubectl config view
     # - run: kubectl config use-context minikube
