@@ -15,7 +15,7 @@ env:
 jobs:
   build-and-deploy:
 
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
 
     steps:
     - name: Checkout code
@@ -28,9 +28,9 @@ jobs:
         distribution: 'adopt'
         cache: maven
         
-      # Construction avec Maven
-    - name: Build with Maven
-      run: mvn clean verify
+    #   # Construction avec Maven
+    # - name: Build with Maven
+    #   run: mvn clean verify
 
     # # Cache des packages Maven
     # - name: Cache Maven packages
@@ -47,12 +47,12 @@ jobs:
     #    cat ${HOME}/.kube/config
     #    ls ~/.kube
       
-    - name: setup config file and get pods test
-      uses: tale/kubectl-action@v1
-    - run: kubectl config current-context
-    - run: kubectl config view
-    - run: kubectl config use-context minikube
-    - run: kubectl get services
+    # - name: setup config file and get pods test
+    #   uses: tale/kubectl-action@v1
+    # - run: kubectl config current-context
+    # - run: kubectl config view
+    # - run: kubectl config use-context minikube
+    # - run: kubectl get services
 
     
 
