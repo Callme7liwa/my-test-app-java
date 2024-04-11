@@ -36,12 +36,11 @@ jobs:
       
       - name: Create kubectl config
         run: |
-          cat << EOF >> ~/.kube/kubeconfig.yaml
-          ${{ secrets.KUBE_CONF }}
-          EOF
-      
+          echo ${{ secrets.KUBE_CONF}} | base64 --decode > ${HOME}/.kube/config
+          cat ${HOME}/.kube/config
+
       - name: Display the file
-        run: cat ~/.kube/kubeconfig.yaml
+        run:  cat ${HOME}/.kube/kubeconfig.yaml
       
       # - name: Echo pods
       #   run: |
