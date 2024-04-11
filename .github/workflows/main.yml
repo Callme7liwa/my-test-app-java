@@ -33,7 +33,7 @@ jobs:
       env:
         KUBE_CONFIG: ${{ secrets.KUBE_CONF }}
       with:
-        args: get pods
+        args: config current-context
         
     #   # Construction avec Maven
     # - name: Build with Maven
