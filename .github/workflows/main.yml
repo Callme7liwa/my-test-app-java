@@ -36,7 +36,9 @@ jobs:
       
       - name: Create kubectl config
         run: |
-          echo "$KUBE_CONFIG" > ~/.kube/kubeconfig.yaml
+          cat << EOF >> ~/.kube/kubeconfig.yaml
+          ${{ secrets.KUBE_CONF }}
+          EOF
       
       - name: Display the file
         run: cat ~/.kube/kubeconfig.yaml
