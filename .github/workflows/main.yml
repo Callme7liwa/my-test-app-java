@@ -29,7 +29,7 @@ jobs:
           cache: maven
     
       - name: Setup kubectl
-        uses: azure/setup-kubectl@v3
+        uses: azure/setup-kubectl@v4.0.0
     
       - name: Create/Verify `.kube` directory
         run: mkdir -p ~/.kube/
@@ -39,8 +39,7 @@ jobs:
           echo ${{ secrets.KUBE_CONF}} | base64 --decode > ${HOME}/.kube/config
           cat ${HOME}/.kube/config
 
-      - name: Display the file
-        run:  cat ${HOME}/.kube/kubeconfig.yaml
+
       
       # - name: Echo pods
       #   run: |
